@@ -20,3 +20,20 @@ speech.say(timeInput)
 %script
 
 u:(dis le chiffre) $nombre
+
+
+
+
+
+u:(telecharge)
+
+%script
+
+import urllib
+
+speech = ALProxy("ALTextToSpeech")
+speech.say("Ok, je télécharge ...")
+urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+speech.say("Ok, je l'ai téléchargé !")
+
+%script
