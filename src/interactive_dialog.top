@@ -22,9 +22,6 @@ speech.say(timeInput)
 u:(dis le chiffre) $nombre
 
 
-
-
-
 u:(telecharge)
 
 %script
@@ -35,5 +32,60 @@ speech = ALProxy("ALTextToSpeech")
 speech.say("Ok, je télécharge ...")
 urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
 speech.say("Ok, je l'ai téléchargé !")
+
+def read_csv(csv_file):
+    data = []
+    with open(csv_file, 'r') as f:
+
+        # create a list of rows in the CSV file
+        rows = f.readlines()
+
+        # strip white-space and newlines
+        rows = list(map(lambda x:x.strip(), rows))
+
+        for row in rows:
+
+            # further split each row into columns assuming delimiter is comma 
+            row = row.split(',')
+
+            # append to data-frame our new row-object with columns
+            data.append(row)
+
+    return data
+
+csvFile = '/home/nao/dialog/evenements.csv'
+
+# invoke our function 
+data = read_csv(csvFile)
+entete = data[0][0].split(';')
+intervenants = []
+projets = []
+descriptions = []
+dates = []
+for row in data[1:]:
+    ligne = row[0].split(';')
+    intervenants.append(ligne[0])
+    projets.append(ligne[1])
+    descriptions.append(ligne[2])
+    dates.append(ligne[3])
+
+memory.insertData("intervenants", intervenants)
+memory.insertData("projets", projets)
+memory.insertData("descriptions", descriptions)
+memory.insertData("dates", dates)
+
+%script
+
+
+u: (intervenants)
+
+%script
+
+intervenants = memory.getData("intervenants")
+speech = ALProxy("ALTextToSpeech")
+
+for intervenant in intervenants:
+	speech.say(intervenant)
+
 
 %script
