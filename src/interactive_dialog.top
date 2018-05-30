@@ -69,6 +69,7 @@ for row in data[1:]:
     descriptions.append(ligne[2])
     dates.append(ligne[3])
 
+memory = ALProxy("ALMemory")
 memory.insertData("intervenants", intervenants)
 memory.insertData("projets", projets)
 memory.insertData("descriptions", descriptions)
@@ -84,8 +85,48 @@ u: (intervenants)
 intervenants = memory.getData("intervenants")
 speech = ALProxy("ALTextToSpeech")
 
+speech.say("Les intervenants sont :")
 for intervenant in intervenants:
 	speech.say(intervenant)
 
+%script
+
+
+u: (projets)
+
+%script
+
+projets = memory.getData("projets")
+speech = ALProxy("ALTextToSpeech")
+
+speech.say("Les projets sont :")
+for projet in projets:
+	speech.say(projet)
+
+%script
+
+u: (Quand ont lieu les prochaines présentations ?)
+
+%script
+
+dates = memory.getData("dates")
+speech = ALProxy("ALTextToSpeech")
+
+speech.say("Les prochaines présentations ont lieu")
+for date in dates:
+	speech.say("le "  + date)
+
+%script
+
+u: (Décris nous les projets)
+
+%script
+
+descriptions = memory.getData("descriptions")
+speech = ALProxy("ALTextToSpeech")
+
+speech.say("Voici une brève description des prochaines présentations")
+for description in descriptions:
+	speech.say("le "  + description)
 
 %script
