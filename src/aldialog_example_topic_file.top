@@ -14,3 +14,5 @@ u: (est ce que tu fonctionne) Oui ca marche!
     u1: ([c'est genial]) Oui trop cool !
 
 u:(compte) 0, 1, 2, 3, 4, 5.
+
+u:(lance methode) ok ^call(MyService.bang)
