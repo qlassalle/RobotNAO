@@ -9,6 +9,10 @@ concept:(annee) [2018 2019 2020 2021 2022 2023 2024]
 
 concept:(projet) [projet projais progeai projé projets]
 
+concept:(quel) [quels quel quelle]
+
+concept:(parle) ["Parle nous des projets d'aujourd'hui" "Parle nous des projet d'aujourd'hui"]
+
 u:(_~projet du _~jour _~mois _~annee) La date demandée est $2 $3 $4
 
 
@@ -21,7 +25,6 @@ import urllib
 speech = ALProxy("ALTextToSpeech")
 speech.say("Ok, je télécharge ...")
 urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
-speech.say("Ok, je l'ai téléchargé et j'ai trouvé !")
 
 def read_csv(csv_file):
     data = []
@@ -64,6 +67,11 @@ memory.insertData("intervenants", intervenants)
 memory.insertData("projets", projets)
 memory.insertData("descriptions", descriptions)
 memory.insertData("dates", dates)
+
+# proxy = ALProxy("ALDialog")
+# proxy.setConcept("intervenant","frf", ["Jean", "Marc Machin", "Toto Tata"])
+
+speech.say("Ok, je l'ai téléchargé et j'ai trouvé " + str(len(intervenants)) + " éléments")
 
 %script
 
@@ -130,5 +138,60 @@ speech.say("dans script")
 memory = ALProxy("ALMemory")
 date = memory.getData("date")
 speech.say("Projets du " + str(date))
+
+%script
+
+u:(_~parle)
+
+%script
+
+speech = ALProxy("ALTextToSpeech")
+memory = ALProxy("ALMemory")
+intervenants = memory.getData("intervenants")
+projets = memory.getData("projets")
+dates = memory.getData("dates")
+descriptions = memory.getData("descriptions")
+
+import time
+## dd/mm/yyyy format
+listeMois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
+listeOrdre = ["premiere", "seconde", "troisieme", "quatrieme", "cinquieme", "sixieme", "septieme", "huitieme", "neuvieme", "dixieme"]
+currDate = time.strftime("%d/%m/%Y")
+mois = currDate[3] + currDate[4]
+jourTmp = currDate[0] + currDate[1]
+jour = jourTmp.lstrip("0")
+newDate = jour + " " + listeMois[int(mois) - 1] + " " + currDate[6] + currDate[7] + currDate[8] + currDate[9]
+
+i = 0
+j = 0
+for aDate in dates:
+    if aDate == newDate:
+        presentations[i][0] = intervenants[j]
+        presentations[i][1] = projets[j]
+        presentations[i][2] = dates[j]
+        presentations[i][3] = descriptions[j]
+        i++
+
+    j++
+
+speech.say("Nous avons " + str(len(presentations)) + " aujourd'hui")
+i = 0
+for presentation in presentations:
+	speech.say("La " + listeOrdre[i] + " presentation porte sur le projet " + presentations[i][1])
+	speech.say("Voici la description du projet " + presentations[i][3])
+	speech.say("Elle est presentee par " + presentations[i][0])
+
+%script
+
+
+dynamic:intervenant
+u:(Parle moi de _~intervenant) Je vais dire les projets présentés par $1
+
+%script
+
+speech = ALProxy("ALTextToSpeech")
+memory = ALProxy("ALMemory")
+# intervenant = memory.getData("intervenant")
+# speech.say("J'ai compris que je devais dire les projets qui vont être présentés par " + intervenant)
 
 %script
