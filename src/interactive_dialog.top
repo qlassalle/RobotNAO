@@ -7,14 +7,32 @@ concept:(mois) [janvier fevrier mars avril mai mais met juin juillet aout septem
 
 concept:(annee) [2018 2019 2020 2021 2022 2023 2024]
 
-concept:(projet) [projet projais progeai projé projets]
+concept:(projet) ["Donne moi les projets" "Donne moi les projais" "Donne moi les progeai" "Donne moi les projé" "Donne moi les progé"]
+
+concept:(salut) ^rand[coucou salut bonjour hey "hey!" bonjour "salut poto" Bonsoir coucou]
+
+concept:(oui) [oui affirmatif assurément absolument totalement completement ok]
+concept:(non) [non négatif "c'est mort" "pas moyen" nop "je refuse" "c'est non"]
 
 concept:(quel) [quels quel quelle]
 
 concept:(parle) ["Parle nous des projets d'aujourd'hui" "Parle nous des projet d'aujourd'hui"]
 
 u:(_~projet du _~jour _~mois _~annee) La date demandée est $2 $3 $4
+u:(e:FrontTactilTouched) Ne me touchez pas!
+u:(~salut) ~salut
 
+proposal: Etape une, Mettre la farine dans un bol et former un puits
+proposal: Etape 2, Dans un saladier, mélangez le sucre, les oeufs, le sucre vanillé
+proposal: Etape 3,  Ajoutez la crème fraiche
+proposal: Etape 4,  Etalez la pâte dans un moule à tarte et piquez le fond à l'aide d'une fourchette. Disposez les pommes sur la pâte et versez le tout sur les pommes ou versez uniquement la crème
+proposal: Etape 5, Puis disposer les lamelles de pommes roulées sur elles-même en roses.
+proposal: Etape 6, Enfournez environ 30 minutes, jusqu'à ce que la tarte prenne une belle couleur dorée
+proposal: Etape 7, Allez vous faire enculer
+
+u:(Je veux faire une tarte aux pommes) ok, je vais te guider, dis moi suivant! quand tu veux que je te donne l'instruction suivante.
+
+u:(suivant) ^nextProposa
 
 u:(telecharge)
 
@@ -297,4 +315,97 @@ for diff in diff_minutes:
 		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
 		
+%script
+
+u:(accède aux évènements de nanterre)
+#Date/Projet/Porteur du projet/Titre/Presentation
+
+%script
+
+import urllib
+import itertools
+speech = ALProxy("ALTextToSpeech")
+
+intervenants = []
+projets = []
+descriptions = []
+dates = []
+titres = []
+
+def read_csv(csv_file):
+    data = []
+    with open(csv_file, 'r') as f:
+
+        # create a list of rows in the CSV file
+        rows = f.readlines()
+
+        # strip white-space and newlines
+        rows = list(map(lambda x:x.strip(), rows))
+
+        for row in rows:
+
+            # further split each row into columns assuming delimiter is comma 
+            row = row.split(',')
+
+            # append to data-frame our new row-object with columns
+            data.append(row)
+
+    return data
+
+reponseStr = []
+speech.say("Ok, je télécharge depuis paris nanterre...")
+urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
+speech.say("C'est bon!")
+csvFileNanterre = '/home/nao/dialog/ParisNanterre.csv'
+csvRows = read_csv(csvFileNanterre)
+entete = csvRows[0][0].split(';')
+
+for row in csvRows[1:]:
+    evenement = row[0].split(';')
+    intervenants.append(evenement[2])
+    projets.append(evenement[1])
+    descriptions.append(evenement[4])
+    dates.append(evenement[0])
+    titres.append(evenement[3])
+    reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[2]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[4]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[0])
+
+memory = ALProxy("ALMemory")
+memory.insertData("intervenants", intervenants)
+memory.insertData("projets", projets)
+memory.insertData("descriptions", descriptions)
+memory.insertData("dates", dates)
+memory.insertData("titres",titres)
+
+for rep in reponseStr:
+    speech.say(rep)
+
+%script
+
+u:(_~projet du _~jour _~mois _~annee) $jour=$2 $mois=$3 $annee=$4
+
+%script
+########## Recherche devenements sur le fichier projet (pas celui du sharepoint) TODO adapter les colonnes
+speech = ALProxy("ALTextToSpeech")
+memory = ALProxy("ALMemory")
+jour = memory.getData("jour")
+mois = memory.getData("mois")
+annee= memory.getData("annee")
+speech.say("OK, je cherche les projets pour la date du "+ str(jour) + str(mois) + str(annee))
+strDate = str(jour)+" "+str(mois)+" "+str(annee)
+
+csvFile = '/home/nao/dialog/evenements.csv'
+# invoke our function 
+data = read_csv(csvFile)
+entete = data[0][0].split(';')
+intervenants = []
+projets = []
+descriptions = []
+dates = []
+strRepResults=""
+for row in data[1:]:
+    ligne = row[0].split(';')
+    if ligne[3]==strDate:
+        speech.say("Le projet "+ligne[1]+" est présenté par "+ligne[0]+"\\pau=1000\\ Voici le contenu que j'ai trouvé pour ce projet : "+"\\pau=500\\"+ligne[2]+"\\pau=500\\")
+
+
 %script
