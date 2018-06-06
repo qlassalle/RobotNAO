@@ -1,0 +1,17 @@
+topic: ~sentences_topic()
+language: frf
+
+concept:(toi) ["As quoi tu sers ?" "Tu sers à quoi ?" "Tu sers aqua ?" "As quoi sers tu ?"]
+concept:(nom) ["Comment tu t'appelles ?" "Quel est ton nom " "Comment t'appelles tu ?" "Comment ta pelle tu ?"]
+concept:(savoir) ["Tu sais quoi ?" "Que sais-tu ?" "Tu peux dire quoi ?" "Que peux tu dire ?"]
+concept:(reponse_savoir) ^rand["Je suis encore jeune mais j'apprend tous les jours ! Pour l'instant, je peux te renseigner sur les présentations" "Je sais des choses que tu ignores ! Surtout sur les présentations, n'hésites pas à me poser des questions !"]
+concept:(travail) ["Pour qui travailles-tu ?" "Qui est ton maitre" "As qui appartient tu"]
+
+
+u:(_~toi) Je suis là pour répondre à vos questions sur les présentations cher point pour ne rien rater !
+
+u:(_~nom) Mon nom est Jean Kévine et je suis ravi de vous rencontrer !
+
+u:(_~savoir) ~reponse_savoir
+
+u:(_~travail) Tout dépend de qui a besoin de moi ! Mais je travaille pour la faculté de Nanterre, la meilleure des fac, quand il n'y a pas de blocus !
