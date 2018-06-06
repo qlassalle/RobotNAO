@@ -159,59 +159,142 @@ memory = ALProxy("ALMemory")
 
 %script
 
-u:(décompte) 
+u:(Passes en mode décompte) 
 
 %script
  
 from datetime import datetime, timedelta
-from threading import Timer
+from threading import Timer, Thread
+from time import sleep
 
 speech = ALProxy("ALTextToSpeech")
 
-def timeout_15():
-	speech.say("Prochaine presentation dans 15 minutes !")
-def timeout_10():
-	speech.say("Prochaine presentation dans 10 minutes !")
-def timeout_5():
-	speech.say("Prochaine presentation dans 5 minutes !")
+speech.say("Mode décompte activé !")
+
+def timeout_x(timeout):
+	if timeout == 60:
+		speech.say("La prochaine présentation aura lieu dans une heure, venez nombreux !")
+	elif timeout == 5:
+		speech.say("La prochaine présentation est dans cinq minutes, allez vite vous installer !")
+	else:
+		speech.say("Votre attention s'il vous plait ! La prochaine presentation aura lieu dans " +  str(timeout) + " minutes !")
+
+def thread_timer(minutes, timeout):
+	sleep(minutes)
+	timeout_x(timeout)
 
 
 diff_minutes = []
 for dtime in dtimes:
 	dtime_date = dtime.split(' ') #separation de la date et de l'heure
 	dt_now = datetime.now()
-	dt_now_str = str(dt_now.day) + '/' + str(dt_now.month) + '/' + str(dt_now.year) + ' ' + str(dt_now.hour) + ':' + str(dt_now.minute) #formatage de la date du jour
+	dt_now_str = '{:02d}'.format(dt_now.day) + '/' + '{:02d}'.format(dt_now.month) + '/' + str(dt_now.year) + ' ' + str(dt_now.hour) + ':' + str(dt_now.minute) #formatage de la date du jour
 	dt_now_str_date = dt_now_str.split(' ')
-	if dtime_date[0] == dt_now_str_date[0] : # comparaison des dates 
+	if dtime_date[0] == dt_now_str_date[0] : # comparaison des dates, ne prend que les présentations du jour 
 		dtime_date_time = dtime_date[1].split(':') #separation de l'heure et des minutes
 		dt_now_str_time = dt_now_str_date[1].split(':')
 
-		time_in_minutes_pres = int(dtime_date_time[0]) * 60 + int(dtime_date_time[1])
+		time_in_minutes_pres = int(dtime_date_time[0]) * 60 + int(dtime_date_time[1]) 
 		time_in_minutes_now = int(dt_now_str_time[0]) * 60 + int(dt_now_str_time[1])
-		diff_minutes.append(time_in_minutes_pres - time_in_minutes_now)
+		diff_minutes.append(time_in_minutes_pres - time_in_minutes_now) #temps en minutes avant l'heure de la présentation
 
+#logique de code a revoir
 for diff in diff_minutes:
-	speech.say("Temps avant prochaine prez : " + str(diff) + "minutes")
-	if diff < 20  and diff > 15:
-		t_15 = Timer((diff-15) * 60, timeout_15)
+	speech.say("Temps avant prochaine présentation : " + str(diff) + "minutes")
+	if diff < 80  and diff >= 60:
+		minutes_60 = (diff-60) * 60
+		t_60 = Thread(target=thread_timer, args=(minutes_60, 60, ))
+		t_60.start()
+
+		minutes_45 = (diff-45) * 60
+		t_45 = Thread(target=thread_timer, args=(minutes_45, 45, ))
+		t_45.start()
+
+		minutes_30 = (diff-30) * 60
+		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
+		t_30.start()
+
+		minutes_15 = (diff-15) * 60
+		t_15 = Thread(target=thread_timer, args=(minutes_15, 15, ))
 		t_15.start()
-		t_10 = Timer((diff-10) * 60, timeout_10)
+
+		minutes_10 = (diff-10) * 60
+		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
 		t_10.start()
-		t_5 = Timer((diff-5) * 60, timeout_5)
+
+		minutes_5 = (diff-5) * 60
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
-		t_15.join()
-		t_10.join()
-		t_5.join()
-	if diff < 15  and diff > 10:
-		t_10 = Timer((diff-10) * 60, timeout_10)
+
+	if diff < 60  and diff >= 45:
+		minutes_45 = (diff-45) * 60
+		t_45 = Thread(target=thread_timer, args=(minutes_45, 45, ))
+		t_45.start()
+
+		minutes_30 = (diff-30) * 60
+		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
+		t_30.start()
+
+		minutes_15 = (diff-15) * 60
+		t_15 = Thread(target=thread_timer, args=(minutes_15, 15, ))
+		t_15.start()
+
+		minutes_10 = (diff-10) * 60
+		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
 		t_10.start()
-		t_5 = Timer((diff-5) * 60, timeout_5)
+
+		minutes_5 = (diff-5) * 60
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
-		t_10.join()
-		t_5.join()
+
+	if diff < 45  and diff >= 30:
+		minutes_30 = (diff-30) * 60
+		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
+		t_30.start()
+
+		minutes_15 = (diff-15) * 60
+		t_15 = Thread(target=thread_timer, args=(minutes_15, 15, ))
+		t_15.start()
+
+		minutes_10 = (diff-10) * 60
+		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
+		t_10.start()
+
+		minutes_5 = (diff-5) * 60
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
+		t_5.start()
+
+	if diff < 30  and diff >= 15:
+		minutes_30 = (diff-30) * 60
+		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
+		t_30.start()
+
+		minutes_15 = (diff-15) * 60
+		t_15 = Thread(target=thread_timer, args=(minutes_15, 15, ))
+		t_15.start()
+
+		minutes_10 = (diff-10) * 60
+		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
+		t_10.start()
+
+		minutes_5 = (diff-5) * 60
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
+		t_5.start()
+
+	if diff < 15  and diff >= 10:
+		minutes_10 = (diff-10) * 60
+		speech.say("minutes_10 = " + str(minutes_10))
+		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
+		t_10.start()
+
+		minutes_5 = (diff-5) * 60
+		speech.say("minutes_5 = " + str(minutes_5))
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
+		t_5.start()
+
 	if diff < 10  and diff > 5:
-		t_5 = Timer((diff-5) * 60, timeout_5)
+		minutes_5 = (diff-5) * 60
+		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
-		t_5.join()
 		
 %script
