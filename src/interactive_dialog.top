@@ -5,7 +5,7 @@ include:basic_sentences.top
 
 concept:(jour) [premier 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31]
 
-concept:(mois) [janvier fevrier mars avril mai mais met juin juillet aout septembre octobre novembre decembre]
+concept:(mois) [janvier fevrier mars avril mai juin juillet aout septembre octobre novembre decembre]
 
 concept:(annee) [2018 2019 2020 2021 2022 2023 2024]
 
@@ -20,7 +20,6 @@ concept:(quel) [quels quel quelle]
 
 concept:(parle) ["Parle nous des projets d'aujourd'hui" "Parle nous des projet d'aujourd'hui"]	
 
-u:(_~projet du _~jour _~mois _~annee) La date demandée est $2 $3 $4
 u:(e:FrontTactilTouched) Ne me touchez pas!
 u:(~salut) ~salut
 
@@ -44,7 +43,7 @@ import urllib
 
 speech = ALProxy("ALTextToSpeech")
 speech.say("Ok, je télécharge ...")
-urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+#urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
 
 def read_csv(csv_file):
     data = []
@@ -115,20 +114,6 @@ for intervenant in intervenants:
 
 %script
 
-
-u: (projets)
-
-%script
-
-projets = memory.getData("projets")
-speech = ALProxy("ALTextToSpeech")
-
-speech.say("Les projets sont :")
-for projet in projets:
-	speech.say(projet)
-
-%script
-
 u: (Quand ont lieu les prochaines présentations ?)
 
 %script
@@ -155,17 +140,17 @@ for description in descriptions:
 
 %script
 
-u:(Donne moi les projets du _*) Apres input humain $1 $date=$1
+# u:(Donne moi les projets du _*) Apres input humain $1 $date=$1
 
-%script
+# %script
 
-speech = ALProxy("ALTextToSpeech")
-speech.say("dans script")
-memory = ALProxy("ALMemory")
-date = memory.getData("date")
-speech.say("Projets du " + str(date))
+# speech = ALProxy("ALTextToSpeech")
+# speech.say("dans script")
+# memory = ALProxy("ALMemory")
+# date = memory.getData("date")
+# speech.say("Projets du " + str(date))
 
-%script
+# %script
 
 dynamic:intervenant
 u:(Parle moi de _~intervenant) Je vais dire les projets présentés par $1
@@ -338,6 +323,8 @@ projets = []
 descriptions = []
 dates = []
 titres = []
+heures = []
+vips = []
 
 def read_csv(csv_file):
     data = []
@@ -369,19 +356,22 @@ entete = csvRows[0][0].split(';')
 
 for row in csvRows[1:]:
     evenement = row[0].split(';')
-    intervenants.append(evenement[2])
+    intervenants.append(evenement[0])
     projets.append(evenement[1])
-    descriptions.append(evenement[4])
-    dates.append(evenement[0])
-    titres.append(evenement[3])
-    reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[2]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[4]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[0])
+    descriptions.append(evenement[2])
+    dates.append(evenement[3])
+    heures.append(evenement[4])
+    vips.append(evenement[5])
+    #titres.append(evenement[3])
+    reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[2]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[3])
 
 memory = ALProxy("ALMemory")
 memory.insertData("intervenants", intervenants)
 memory.insertData("projets", projets)
 memory.insertData("descriptions", descriptions)
 memory.insertData("dates", dates)
-memory.insertData("titres",titres)
+memory.insertData("vips", vips)
+#memory.insertData("titres",titres)
 
 for rep in reponseStr:
     speech.say(rep)
@@ -397,8 +387,9 @@ memory = ALProxy("ALMemory")
 jour = memory.getData("jour")
 mois = memory.getData("mois")
 annee= memory.getData("annee")
+listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
 speech.say("OK, je cherche les projets pour la date du "+ str(jour) + str(mois) + str(annee))
-strDate = str(jour)+" "+str(mois)+" "+str(annee)
+strDate = '{:02d}'.format(int(jour))+"/"+'{:02d}'.format(listeMois.index(str(mois))+1)+"/"+str(annee)
 
 csvFile = '/home/nao/dialog/evenements.csv'
 # invoke our function 
