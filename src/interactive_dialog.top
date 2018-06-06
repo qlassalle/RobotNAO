@@ -358,12 +358,18 @@ for row in csvRows[1:]:
     evenement = row[0].split(';')
     intervenants.append(evenement[0])
     projets.append(evenement[1])
-    descriptions.append(evenement[2])
-    dates.append(evenement[3])
-    heures.append(evenement[4])
-    vips.append(evenement[5])
-    #titres.append(evenement[3])
-    reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[2]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[3])
+    titres.append(evenement[2])
+    descriptions.append(evenement[3])
+    dates.append(evenement[4])
+    heures.append(evenement[5])
+    vips.append(evenement[6])
+    dt = ligne[4] + " " + ligne[5]
+    dtimes.append(dt)
+    if evenement[6]=="":
+    	reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5])
+    else:
+    	reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5] + " Nous tenons a remercier " + evenement[6] + " pour leurs participation")
+
 
 memory = ALProxy("ALMemory")
 memory.insertData("intervenants", intervenants)
@@ -371,7 +377,8 @@ memory.insertData("projets", projets)
 memory.insertData("descriptions", descriptions)
 memory.insertData("dates", dates)
 memory.insertData("vips", vips)
-#memory.insertData("titres",titres)
+memory.insertData("titres",titres)
+memory.insertData("dtimes", dtimes)
 
 for rep in reponseStr:
     speech.say(rep)
