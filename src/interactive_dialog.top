@@ -55,18 +55,24 @@ intervenants = []
 projets = []
 descriptions = []
 dates = []
+heures = []
+dtimes = []
 for row in data[1:]:
     ligne = row[0].split(';')
     intervenants.append(ligne[0])
     projets.append(ligne[1])
     descriptions.append(ligne[2])
     dates.append(ligne[3])
+    heures.append(ligne[4])
+    dt = ligne[3] + " " + ligne[4]
+    dtimes.append(dt)
 
 memory = ALProxy("ALMemory")
 memory.insertData("intervenants", intervenants)
 memory.insertData("projets", projets)
 memory.insertData("descriptions", descriptions)
 memory.insertData("dates", dates)
+memory.insertData("dtimes", dtimes)
 
 # proxy = ALProxy("ALDialog")
 # proxy.setConcept("intervenant","frf", ["Jean", "Marc Machin", "Toto Tata"])
@@ -141,49 +147,6 @@ speech.say("Projets du " + str(date))
 
 %script
 
-u:(_~parle)
-
-%script
-
-speech = ALProxy("ALTextToSpeech")
-memory = ALProxy("ALMemory")
-intervenants = memory.getData("intervenants")
-projets = memory.getData("projets")
-dates = memory.getData("dates")
-descriptions = memory.getData("descriptions")
-
-import time
-## dd/mm/yyyy format
-listeMois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
-listeOrdre = ["premiere", "seconde", "troisieme", "quatrieme", "cinquieme", "sixieme", "septieme", "huitieme", "neuvieme", "dixieme"]
-currDate = time.strftime("%d/%m/%Y")
-mois = currDate[3] + currDate[4]
-jourTmp = currDate[0] + currDate[1]
-jour = jourTmp.lstrip("0")
-newDate = jour + " " + listeMois[int(mois) - 1] + " " + currDate[6] + currDate[7] + currDate[8] + currDate[9]
-
-i = 0
-j = 0
-for aDate in dates:
-    if aDate == newDate:
-        presentations[i][0] = intervenants[j]
-        presentations[i][1] = projets[j]
-        presentations[i][2] = dates[j]
-        presentations[i][3] = descriptions[j]
-        i++
-
-    j++
-
-speech.say("Nous avons " + str(len(presentations)) + " aujourd'hui")
-i = 0
-for presentation in presentations:
-	speech.say("La " + listeOrdre[i] + " presentation porte sur le projet " + presentations[i][1])
-	speech.say("Voici la description du projet " + presentations[i][3])
-	speech.say("Elle est presentee par " + presentations[i][0])
-
-%script
-
-
 dynamic:intervenant
 u:(Parle moi de _~intervenant) Je vais dire les projets présentés par $1
 
@@ -194,4 +157,61 @@ memory = ALProxy("ALMemory")
 # intervenant = memory.getData("intervenant")
 # speech.say("J'ai compris que je devais dire les projets qui vont être présentés par " + intervenant)
 
+%script
+
+u:(décompte) 
+
+%script
+ 
+from datetime import datetime, timedelta
+from threading import Timer
+
+speech = ALProxy("ALTextToSpeech")
+
+def timeout_15():
+	speech.say("Prochaine presentation dans 15 minutes !")
+def timeout_10():
+	speech.say("Prochaine presentation dans 10 minutes !")
+def timeout_5():
+	speech.say("Prochaine presentation dans 5 minutes !")
+
+
+diff_minutes = []
+for dtime in dtimes:
+	dtime_date = dtime.split(' ') #separation de la date et de l'heure
+	dt_now = datetime.now()
+	dt_now_str = str(dt_now.day) + '/' + str(dt_now.month) + '/' + str(dt_now.year) + ' ' + str(dt_now.hour) + ':' + str(dt_now.minute) #formatage de la date du jour
+	dt_now_str_date = dt_now_str.split(' ')
+	if dtime_date[0] == dt_now_str_date[0] : # comparaison des dates 
+		dtime_date_time = dtime_date[1].split(':') #separation de l'heure et des minutes
+		dt_now_str_time = dt_now_str_date[1].split(':')
+
+		time_in_minutes_pres = int(dtime_date_time[0]) * 60 + int(dtime_date_time[1])
+		time_in_minutes_now = int(dt_now_str_time[0]) * 60 + int(dt_now_str_time[1])
+		diff_minutes.append(time_in_minutes_pres - time_in_minutes_now)
+
+for diff in diff_minutes:
+	speech.say("Temps avant prochaine prez : " + str(diff) + "minutes")
+	if diff < 20  and diff > 15:
+		t_15 = Timer((diff-15) * 60, timeout_15)
+		t_15.start()
+		t_10 = Timer((diff-10) * 60, timeout_10)
+		t_10.start()
+		t_5 = Timer((diff-5) * 60, timeout_5)
+		t_5.start()
+		t_15.join()
+		t_10.join()
+		t_5.join()
+	if diff < 15  and diff > 10:
+		t_10 = Timer((diff-10) * 60, timeout_10)
+		t_10.start()
+		t_5 = Timer((diff-5) * 60, timeout_5)
+		t_5.start()
+		t_10.join()
+		t_5.join()
+	if diff < 10  and diff > 5:
+		t_5 = Timer((diff-5) * 60, timeout_5)
+		t_5.start()
+		t_5.join()
+		
 %script

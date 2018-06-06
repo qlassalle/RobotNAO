@@ -6,6 +6,9 @@
 import qi
 import argparse
 import sys
+import subprocess
+import os
+from datetime import datetime
 
 def main(session, topic_path):
     """
