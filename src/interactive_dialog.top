@@ -301,5 +301,8 @@ for diff in diff_minutes:
 
 	else:
 		speech.say("Aucune présentation n'a lieu bientôt, revenez plus tard !")
+
+if not diff_minutes:
+	speech.say("Aucune présentation aujourd'hui, revenez un autre jour !")
 		
 %script
