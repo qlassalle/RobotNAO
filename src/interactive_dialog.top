@@ -168,10 +168,13 @@ for dtime in dtimes:
 		time_in_minutes_now = int(dt_now_str_time[0]) * 60 + int(dt_now_str_time[1])
 		diff_minutes.append(time_in_minutes_pres - time_in_minutes_now) #temps en minutes avant l'heure de la présentation
 
+pres_p = 0 #variable a incrementer si il y a une presentation bientot
 #logique de code a revoir
 for diff in diff_minutes:
-	speech.say("Temps avant prochaine présentation : " + str(diff) + "minutes")
+	#speech.say("Temps avant prochaine présentation : " + str(diff) + "minutes")
 	if diff < 80  and diff >= 60:
+		pres_p += 1
+
 		minutes_60 = (diff-60) * 60
 		t_60 = Thread(target=thread_timer, args=(minutes_60, 60, ))
 		t_60.start()
@@ -197,6 +200,8 @@ for diff in diff_minutes:
 		t_5.start()
 
 	elif diff < 60  and diff >= 45:
+		pres_p += 1
+
 		minutes_45 = (diff-45) * 60
 		t_45 = Thread(target=thread_timer, args=(minutes_45, 45, ))
 		t_45.start()
@@ -218,6 +223,8 @@ for diff in diff_minutes:
 		t_5.start()
 
 	elif diff < 45  and diff >= 30:
+		pres_p += 1
+
 		minutes_30 = (diff-30) * 60
 		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
 		t_30.start()
@@ -235,6 +242,8 @@ for diff in diff_minutes:
 		t_5.start()
 
 	elif diff < 30  and diff >= 15:
+		pres_p += 1
+
 		minutes_30 = (diff-30) * 60
 		t_30 = Thread(target=thread_timer, args=(minutes_30, 30, ))
 		t_30.start()
@@ -252,35 +261,38 @@ for diff in diff_minutes:
 		t_5.start()
 
 	elif diff < 15  and diff >= 10:
+		pres_p += 1
+
 		minutes_10 = (diff-10) * 60
-		speech.say("minutes_10 = " + str(minutes_10))
 		t_10 = Thread(target=thread_timer, args=(minutes_10, 10, ))
 		t_10.start()
 
 		minutes_5 = (diff-5) * 60
-		speech.say("minutes_5 = " + str(minutes_5))
 		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
 
 	elif diff < 10  and diff > 5:
+		pres_p += 1
+
 		minutes_5 = (diff-5) * 60
 		t_5 = Thread(target=thread_timer, args=(minutes_5, 5, ))
 		t_5.start()
 
-	else:
-		speech.say("Aucune présentation n'a lieu bientôt, revenez plus tard !")
+if pres_p == 0:
+	speech.say("Aucune présentation n'a lieu bientôt, revenez plus tard !")
 
 if not diff_minutes:
 	speech.say("Aucune présentation aujourd'hui, revenez un autre jour !")
 		
 %script
-u:(accède aux évènements de nanterre)
-#Date/Projet/Porteur du projet/Titre/Presentation
+u:(accède aux présentations du jour)
+#Intervenant/Projet/Titre/Description/Date/Heure/VIP
 
 %script
 
 import urllib
 import itertools
+from datetime import datetime, timedelta
 speech = ALProxy("ALTextToSpeech")
 
 intervenants = []
@@ -290,6 +302,7 @@ dates = []
 titres = []
 heures = []
 vips = []
+dtimes = []
 
 def read_csv(csv_file):
     data = []
@@ -313,9 +326,9 @@ def read_csv(csv_file):
 
 reponseStr = []
 speech.say("Ok, je télécharge depuis paris nanterre...")
-urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
+urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
 speech.say("C'est bon!")
-csvFileNanterre = '/home/nao/dialog/ParisNanterre.csv'
+csvFileNanterre = '/home/nao/dialog/evenements.csv'
 csvRows = read_csv(csvFileNanterre)
 entete = csvRows[0][0].split(';')
 
@@ -328,13 +341,18 @@ for row in csvRows[1:]:
     dates.append(evenement[4])
     heures.append(evenement[5])
     vips.append(evenement[6])
-    dt = ligne[4] + " " + ligne[5]
+    dt = evenement[4] + " " + evenement[5] #sert au decompte
     dtimes.append(dt)
-    if evenement[6]=="":
-    	reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5])
-    else:
-    	reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5] + " Nous tenons a remercier " + evenement[6] + " pour leurs participation")
+    dt_now = datetime.now()
+    dt_now_str = '{:02d}'.format(dt_now.day) + '/' + '{:02d}'.format(dt_now.month) + '/' + str(dt_now.year) #formatage de la date
+    if evenement[4]==dt_now_str:
+    	if evenement[6] == "":
+    		reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5])
+    	else:
+    		reponseStr.append("Le projet "+evenement[1]+" sera porté par "+evenement[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+evenement[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+evenement[4] + " a " + evenement[5] + " Nous tenons a remercier " + evenement[6] + " pour leurs participation")
 
+if not reponseStr:
+	reponseStr.append("Il n'y a pas de présentation aujourd'hui !")
 
 memory = ALProxy("ALMemory")
 memory.insertData("intervenants", intervenants)
