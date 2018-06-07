@@ -23,18 +23,6 @@ concept:(parle) ["Parle nous des projets d'aujourd'hui" "Parle nous des projet d
 u:(e:FrontTactilTouched) Ne me touchez pas!
 u:(~salut) ~salut
 
-proposal: Etape une, Mettre la farine dans un bol et former un puits
-proposal: Etape 2, Dans un saladier, mélangez le sucre, les oeufs, le sucre vanillé
-proposal: Etape 3,  Ajoutez la crème fraiche
-proposal: Etape 4,  Etalez la pâte dans un moule à tarte et piquez le fond à l'aide d'une fourchette. Disposez les pommes sur la pâte et versez le tout sur les pommes ou versez uniquement la crème
-proposal: Etape 5, Puis disposer les lamelles de pommes roulées sur elles-même en roses.
-proposal: Etape 6, Enfournez environ 30 minutes, jusqu'à ce que la tarte prenne une belle couleur dorée
-proposal: Etape 7, Allez vous faire enculer
-
-u:(Je veux faire une tarte aux pommes) ok, je vais te guider, dis moi suivant! quand tu veux que je te donne l'instruction suivante.
-
-u:(suivant) ^nextProposa
-
 u:(telecharge)
 
 %script
@@ -140,29 +128,6 @@ for description in descriptions:
 
 %script
 
-# u:(Donne moi les projets du _*) Apres input humain $1 $date=$1
-
-# %script
-
-# speech = ALProxy("ALTextToSpeech")
-# speech.say("dans script")
-# memory = ALProxy("ALMemory")
-# date = memory.getData("date")
-# speech.say("Projets du " + str(date))
-
-# %script
-
-dynamic:intervenant
-u:(Parle moi de _~intervenant) Je vais dire les projets présentés par $1
-
-%script
-
-speech = ALProxy("ALTextToSpeech")
-memory = ALProxy("ALMemory")
-# intervenant = memory.getData("intervenant")
-# speech.say("J'ai compris que je devais dire les projets qui vont être présentés par " + intervenant)
-
-%script
 
 u:(Passes en mode décompte) 
 
@@ -388,29 +353,63 @@ for rep in reponseStr:
 u:(_~projet du _~jour _~mois _~annee) $jour=$2 $mois=$3 $annee=$4
 
 %script
-########## Recherche devenements sur le fichier projet (pas celui du sharepoint) TODO adapter les colonnes
+########## Recherche devenements sur le fichier projet
 speech = ALProxy("ALTextToSpeech")
 memory = ALProxy("ALMemory")
+
+#urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
+urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+
 jour = memory.getData("jour")
 mois = memory.getData("mois")
 annee= memory.getData("annee")
+
+intervenants = []
+projets = []
+descriptions = []
+dates = []
+titres = []
+heures = []
+vips = []
+
 listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
 speech.say("OK, je cherche les projets pour la date du "+ str(jour) + str(mois) + str(annee))
 strDate = '{:02d}'.format(int(jour))+"/"+'{:02d}'.format(listeMois.index(str(mois))+1)+"/"+str(annee)
 
 csvFile = '/home/nao/dialog/evenements.csv'
-# invoke our function 
+# lecture des données
 data = read_csv(csvFile)
 entete = data[0][0].split(';')
-intervenants = []
-projets = []
-descriptions = []
-dates = []
-strRepResults=""
+reponseRequeteDate = []
 for row in data[1:]:
     ligne = row[0].split(';')
-    if ligne[3]==strDate:
-        speech.say("Le projet "+ligne[1]+" est présenté par "+ligne[0]+"\\pau=1000\\ Voici le contenu que j'ai trouvé pour ce projet : "+"\\pau=500\\"+ligne[2]+"\\pau=500\\")
+    intervenants.append(ligne[0])
+    projets.append(ligne[1])
+    titres.append(ligne[2])
+    descriptions.append(ligne[3])
+    dates.append(ligne[4])
+    heures.append(ligne[5])
+    vips.append(ligne[6])
+    dt = ligne[4] + " " + ligne[5]
+    dtimes.append(dt)
+    if ligne[4]==strDate:
+    	if ligne[6]=="":
+    		reponseRequeteDate.append("Le projet "+ligne[1]+" sera porté par "+ligne[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+ligne[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+ligne[4] + " a " + ligne[5])
+    	else:
+    		reponseRequeteDate.append("Le projet "+ligne[1]+" sera porté par "+ligne[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+ligne[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+ligne[4] + " a " + ligne[5] + " Nous tenons a remercier " + ligne[6] + " pour leurs participation")
+    else:
+    	reponseRequeteDate.append("A priori \\pau=200\\ il n'y a pas de présentation pour la date du "+str(jour)+" "+str(mois)+" "+str(annee))
+    	break
 
+for rep in reponseRequeteDate:
+    speech.say(rep)
+
+memory.insertData("intervenants", intervenants)
+memory.insertData("projets", projets)
+memory.insertData("descriptions", descriptions)
+memory.insertData("dates", dates)
+memory.insertData("vips", vips)
+memory.insertData("titres",titres)
+memory.insertData("dtimes", dtimes)
 
 %script
