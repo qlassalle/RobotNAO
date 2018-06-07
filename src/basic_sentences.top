@@ -6,6 +6,10 @@ concept:(nom) ["Comment tu t'appelles ?" "Quel est ton nom " "Comment t'appelles
 concept:(savoir) ["Tu sais quoi ?" "Que sais-tu ?" "Tu peux dire quoi ?" "Que peux tu dire ?"]
 concept:(reponse_savoir) ^rand["Je suis encore jeune mais j'apprend tous les jours ! Pour l'instant, je peux te renseigner sur les présentations" "Je sais des choses que tu ignores ! Surtout sur les présentations, n'hésites pas à me poser des questions !"]
 concept:(travail) ["Pour qui travailles-tu ?" "Qui est ton maitre" "As qui appartient tu"]
+concept:(origine) ["Qui t'a créé ?" "Qui t'a programmé ?" "D'où viens-tu ?"]
+concept:(amis)	  ["Qui sont tes amis ?" "Tu as des amis ?" "Ou sont tes amis" "Qui sont tes copains ?" "Tu as des copains ?" "Ou sont tes copains ?"]
+concept:(blague) ["Raconte nous une blague" "Dis une blague" blague]
+concept:(reponse_blague) ^rand["L'autre jour, j’ai raconté une blague sur Carrefour, mais elle a pas supermarché..." "Comment appelle-t-on un chat tombé dans un pot de peinture le jour de Noël ? Un chat-peint de Noël"]
 
 
 u:(_~toi) Je suis là pour répondre à vos questions sur les présentations cher point pour ne rien rater !
@@ -15,3 +19,9 @@ u:(_~nom) Mon nom est Jean Kévine et je suis ravi de vous rencontrer !
 u:(_~savoir) ~reponse_savoir
 
 u:(_~travail) Tout dépend de qui a besoin de moi ! Mais je travaille pour la faculté de Nanterre, la meilleure des fac, quand il n'y a pas de blocus !
+
+u:(_~origine) J'ai été créé par les meilleurs étudiants de la MIAGE de Nanterre !
+
+u:(_~amis) Tout le monde peut être mon ami, et toi, tu veux être mon ami ?
+
+u:(_~blague) ~reponse_blague

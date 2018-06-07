@@ -1,9 +1,10 @@
-from datetime import datetime
+import http.client
 
-time = datetime.now().strftime('%H:%M:%S')
-time2 = '10:33:00'
-FMT='%H:%M:%S'
+conn = http.client.HTTPSConnection("api.sportradar.us")
 
-tdelta = datetime.strptime(time2, FMT) - datetime.strptime(time, FMT)
+conn.request("GET", "/tennis-t2/en/schedules/2016-07-06/results.xml?api_key=avt52c5das7kngnh5xe7t554")
 
-print tdelta
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
