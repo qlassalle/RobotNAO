@@ -521,7 +521,7 @@ for row in data[1:]:
     mois_annee = dt_mois_annee[1] + '/' + dt_mois_annee[2]
     dtimes.append(dt)
     if mois_annee==strDate:
-    	reponseRequeteDate.append(' vous pourrez écouter la présentation ' + ligne[2] + ' présentée par ' + ligne[0])
+    	reponseRequeteDate.append(' vous pourrez écouter la présentation ' + ligne[1] + ' présentée par ' + ligne[0])
 
 if not reponseRequeteDate:
 	speech.say("Il n'y a pas de présentation au mois de " + str(mois) + " a ce jour !")
