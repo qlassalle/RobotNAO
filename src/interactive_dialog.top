@@ -291,7 +291,7 @@ u:(accède aux présentations du jour)
 %script
 
 import urllib
-import itertools
+import itertools	
 from datetime import datetime, timedelta
 speech = ALProxy("ALTextToSpeech")
 
@@ -372,8 +372,29 @@ u:(_~projet du _~jour _~mois _~annee) $jour=$2 $mois=$3 $annee=$4
 
 %script
 ########## Recherche devenements sur le fichier projet
+import urllib
 speech = ALProxy("ALTextToSpeech")
 memory = ALProxy("ALMemory")
+
+def read_csv(csv_file):
+    data = []
+    with open(csv_file, 'r') as f:
+
+        # create a list of rows in the CSV file
+        rows = f.readlines()
+
+        # strip white-space and newlines
+        rows = list(map(lambda x:x.strip(), rows))
+
+        for row in rows:
+
+            # further split each row into columns assuming delimiter is comma 
+            row = row.split(',')
+
+            # append to data-frame our new row-object with columns
+            data.append(row)
+
+    return data
 
 #urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
 urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
@@ -389,6 +410,7 @@ dates = []
 titres = []
 heures = []
 vips = []
+dtimes = []
 
 listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
 speech.say("OK, je cherche les projets pour la date du "+ str(jour) + str(mois) + str(annee))
