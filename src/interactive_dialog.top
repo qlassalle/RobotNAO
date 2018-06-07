@@ -453,3 +453,88 @@ memory.insertData("titres",titres)
 memory.insertData("dtimes", dtimes)
 
 %script
+
+u:(_~projet du mois de _~mois _~annee) $mois=$2 $annee=$3
+
+%script
+
+import urllib
+speech = ALProxy("ALTextToSpeech")
+memory = ALProxy("ALMemory")
+
+def read_csv(csv_file):
+    data = []
+    with open(csv_file, 'r') as f:
+
+        # create a list of rows in the CSV file
+        rows = f.readlines()
+
+        # strip white-space and newlines
+        rows = list(map(lambda x:x.strip(), rows))
+
+        for row in rows:
+
+            # further split each row into columns assuming delimiter is comma 
+            row = row.split(',')
+
+            # append to data-frame our new row-object with columns
+            data.append(row)
+
+    return data
+
+#urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
+urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+
+mois = memory.getData("mois")
+annee= memory.getData("annee")
+
+intervenants = []
+projets = []
+descriptions = []
+dates = []
+titres = []
+heures = []
+vips = []
+dtimes = []
+
+listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre", "novembre", "decembre"]
+speech.say("OK, je cherche les projets pour le mois de "+ str(mois) + str(annee))
+strDate = '{:02d}'.format(listeMois.index(str(mois))+1)+"/"+str(annee)
+
+csvFile = '/home/nao/dialog/evenements.csv'
+# lecture des données
+data = read_csv(csvFile)
+entete = data[0][0].split(';')
+reponseRequeteDate = []
+for row in data[1:]:
+    ligne = row[0].split(';')
+    intervenants.append(ligne[0])
+    projets.append(ligne[1])
+    titres.append(ligne[2])
+    descriptions.append(ligne[3])
+    dates.append(ligne[4])
+    heures.append(ligne[5])
+    vips.append(ligne[6])
+    dt = ligne[4] + " " + ligne[5]
+    dt_mois_annee = ligne[4].split('/')
+    mois_annee = dt_mois_annee[1] + '/' + dt_mois_annee[2]
+    dtimes.append(dt)
+    if mois_annee==strDate:
+    	reponseRequeteDate.append(' vous pourrez écouter la présentation ' + ligne[2] + ' présentée par ' + ligne[0])
+
+if not reponseRequeteDate:
+	speech.say("Il n'y a pas de présentation au mois de " + str(mois) + " a ce jour !")
+else:
+	speech.say('Au mois de ' + listeMois[int(dt_mois_annee[1]) - 1] )
+	for rep in reponseRequeteDate:
+		speech.say(rep)
+
+memory.insertData("intervenants", intervenants)
+memory.insertData("projets", projets)
+memory.insertData("descriptions", descriptions)
+memory.insertData("dates", dates)
+memory.insertData("vips", vips)
+memory.insertData("titres",titres)
+memory.insertData("dtimes", dtimes)
+
+%script
