@@ -437,12 +437,13 @@ for row in data[1:]:
     		reponseRequeteDate.append("Le projet "+ligne[1]+" sera porté par "+ligne[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+ligne[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+ligne[4] + " a " + ligne[5])
     	else:
     		reponseRequeteDate.append("Le projet "+ligne[1]+" sera porté par "+ligne[0]+" \\pau=1000\\ le contenu de ce projet est \\pau=250\\ "+ligne[3]+" \\pau=150 \\et aura lieu le \\pau=150\\ "+ligne[4] + " a " + ligne[5] + " Nous tenons a remercier " + ligne[6] + " pour leurs participation")
-    else:
-    	reponseRequeteDate.append("A priori \\pau=200\\ il n'y a pas de présentation pour la date du "+str(jour)+" "+str(mois)+" "+str(annee))
-    	break
 
-for rep in reponseRequeteDate:
-    speech.say(rep)
+if not reponseRequeteDate:
+	speech.say("A priori \\pau=200\\ il n'y a pas de présentation pour la date du "+str(jour)+" "+str(mois)+" "+str(annee))
+else:
+	for rep in reponseRequeteDate:
+		speech.say(rep)
+
 
 memory.insertData("intervenants", intervenants)
 memory.insertData("projets", projets)
