@@ -1,0 +1,4 @@
+export PATH=""
+ajouter /usr/local/bin/python à votre path
+export PYTHONPATH=${PYTHONPATH}:_chemin_vers_NaoQiPythonSDK/lib/python2.7/site-packages
+export DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:_chemin_vers_NaoQiPythonSDK/lib
