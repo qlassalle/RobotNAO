@@ -54,64 +54,8 @@ def report_callback_exception(self, exc, val, tb):
         showerror("Error", message=str(val))
         frame.insert(END,"\n"+"Impossible de se connecter avec cette IP \nEssayez d'appuyer sur le torse de nao pour obtenir son adresse IP")
 
-# //TODO, trouver comment deposer fichier csv sur le robot, a l'aide de urlretrieve ou autre
-# def read_csv(csv_file):
-#     data = []
-#     with open(csv_file, 'r') as f:
 
-#         # create a list of rows in the CSV file
-#         rows = f.readlines()
-
-#         # strip white-space and newlines
-#         rows = list(map(lambda x:x.strip(), rows))
-
-#         for row in rows:
-
-#             # further split each row into columns assuming delimiter is comma 
-#             row = row.split(',')
-
-#             # append to data-frame our new row-object with columns
-#             data.append(row)
-
-#     return data
-
-# def download_data():
-#     urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
-#     csvFileNanterre = '/home/nao/dialog/evenements.csv'
-#     csvRows = read_csv(csvFileNanterre)
-#     entete = csvRows[0][0].split(';')
-
-#     intervenants = []
-#     projets = []
-#     descriptions = []
-#     dates = []
-#     titres = []
-#     heures = []
-#     vips = []
-#     dtimes = []
-
-#     for row in csvRows[1:]:
-#         evenement = row[0].split(';')
-#         intervenants.append(evenement[0])
-#         projets.append(evenement[1])
-#         titres.append(evenement[2])
-#         descriptions.append(evenement[3])
-#         dates.append(evenement[4])
-#         heures.append(evenement[5])
-#         vips.append(evenement[6])
-#         dt = evenement[4] + " " + evenement[5] #sert au decompte
-#         dtimes.append(dt)
-#         dt_now = datetime.now()
-#         dt_now_str = '{:02d}'.format(dt_now.day) + '/' + '{:02d}'.format(dt_now.month) + '/' + str(dt_now.year) #formatage de la date
-
-#     memory = ALProxy("ALMemory")
-#     memory.insertData("intervenants", intervenants)
-#     memory.insertData("projets", projets)
-#     memory.insertData("descriptions", descriptions)
-#     memory.insertData("dates", dates)
-#     memory.insertData("vips", vips)
-#     memory.insertData("titres",titres)
-#     memory.insertData("dtimes", dtimes)
+#TODO faire le telechargement du fichier depuis ce script et trouver ensuite comment le despoer sur le robot pour voir l'utiliser dans le .top
     
 def main():
     ip = var.get()
@@ -144,6 +88,7 @@ def main():
     # We subscribe only ONCE, regardless of the number of topics we have activated
     ALDialog.subscribe('my_dialog_example')
 
+#GUI de demarrage du programme
 content.grid(column=0, row=0, sticky=(N, S, E, W))
 frame.grid(column=0, row=0, columnspan=1, rowspan=2, sticky=(N, S, E, W))
 adresseIPLabel.grid(column=3, row=0, columnspan=2, sticky=(N, W), padx=5)

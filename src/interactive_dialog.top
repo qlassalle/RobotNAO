@@ -23,70 +23,70 @@ concept:(parle) ["Parle nous des projets d'aujourd'hui" "Parle nous des projet d
 u:(e:FrontTactilTouched) Ne me touchez pas!
 u:(~salut) ~salut
 
-u:(telecharge)
+# u:(telecharge)
 
-%script
+# %script
 
-import urllib
+# import urllib
 
-speech = ALProxy("ALTextToSpeech")
-speech.say("Ok, je télécharge ...")
-#urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+# speech = ALProxy("ALTextToSpeech")
+# speech.say("Ok, je télécharge ...")
+# #urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
 
-def read_csv(csv_file):
-    data = []
-    with open(csv_file, 'r') as f:
+# def read_csv(csv_file):
+#     data = []
+#     with open(csv_file, 'r') as f:
 
-        # create a list of rows in the CSV file
-        rows = f.readlines()
+#         # create a list of rows in the CSV file
+#         rows = f.readlines()
 
-        # strip white-space and newlines
-        rows = list(map(lambda x:x.strip(), rows))
+#         # strip white-space and newlines
+#         rows = list(map(lambda x:x.strip(), rows))
 
-        for row in rows:
+#         for row in rows:
 
-            # further split each row into columns assuming delimiter is comma 
-            row = row.split(',')
+#             # further split each row into columns assuming delimiter is comma 
+#             row = row.split(',')
 
-            # append to data-frame our new row-object with columns
-            data.append(row)
+#             # append to data-frame our new row-object with columns
+#             data.append(row)
 
-    return data
+#     return data
 
-csvFile = '/home/nao/dialog/evenements.csv'
+# csvFile = '/home/nao/dialog/evenements.csv'
 
-# invoke our function 
-data = read_csv(csvFile)
-entete = data[0][0].split(';')
-intervenants = []
-projets = []
-descriptions = []
-dates = []
-heures = []
-dtimes = []
-for row in data[1:]:
-    ligne = row[0].split(';')
-    intervenants.append(ligne[0])
-    projets.append(ligne[1])
-    descriptions.append(ligne[2])
-    dates.append(ligne[3])
-    heures.append(ligne[4])
-    dt = ligne[3] + " " + ligne[4]
-    dtimes.append(dt)
+# # invoke our function 
+# data = read_csv(csvFile)
+# entete = data[0][0].split(';')
+# intervenants = []
+# projets = []
+# descriptions = []
+# dates = []
+# heures = []
+# dtimes = []
+# for row in data[1:]:
+#     ligne = row[0].split(';')
+#     intervenants.append(ligne[0])
+#     projets.append(ligne[1])
+#     descriptions.append(ligne[2])
+#     dates.append(ligne[3])
+#     heures.append(ligne[4])
+#     dt = ligne[3] + " " + ligne[4]
+#     dtimes.append(dt)
 
-memory = ALProxy("ALMemory")
-memory.insertData("intervenants", intervenants)
-memory.insertData("projets", projets)
-memory.insertData("descriptions", descriptions)
-memory.insertData("dates", dates)
-memory.insertData("dtimes", dtimes)
+# memory = ALProxy("ALMemory")
+# memory.insertData("intervenants", intervenants)
+# memory.insertData("projets", projets)
+# memory.insertData("descriptions", descriptions)
+# memory.insertData("dates", dates)
+# memory.insertData("dtimes", dtimes)
 
-# proxy = ALProxy("ALDialog")
-# proxy.setConcept("intervenant","frf", ["Jean", "Marc Machin", "Toto Tata"])
+# # proxy = ALProxy("ALDialog")
+# # proxy.setConcept("intervenant","frf", ["Jean", "Marc Machin", "Toto Tata"])
 
-speech.say("Ok, je l'ai téléchargé et j'ai trouvé " + str(len(intervenants)) + " éléments")
+# speech.say("Ok, je l'ai téléchargé et j'ai trouvé " + str(len(intervenants)) + " éléments")
 
-%script
+# %script
 
 
 u: (intervenants)
@@ -326,9 +326,9 @@ def read_csv(csv_file):
 
 reponseStr = []
 speech.say("Ok, je télécharge depuis paris nanterre...")
-urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
 speech.say("C'est bon!")
-csvFileNanterre = '/home/nao/dialog/evenements.csv'
+csvFileNanterre = '/home/nao/dialog/ParisNanterre.csv'
 csvRows = read_csv(csvFileNanterre)
 entete = csvRows[0][0].split(';')
 
@@ -396,8 +396,7 @@ def read_csv(csv_file):
 
     return data
 
-#urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
-urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
+urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
 
 jour = memory.getData("jour")
 mois = memory.getData("mois")
@@ -416,7 +415,7 @@ listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "
 speech.say("OK, je cherche les projets pour la date du "+ str(jour) + str(mois) + str(annee))
 strDate = '{:02d}'.format(int(jour))+"/"+'{:02d}'.format(listeMois.index(str(mois))+1)+"/"+str(annee)
 
-csvFile = '/home/nao/dialog/evenements.csv'
+csvFile = '/home/nao/dialog/ParisNanterre.csv'
 # lecture des données
 data = read_csv(csvFile)
 entete = data[0][0].split(';')
@@ -483,9 +482,7 @@ def read_csv(csv_file):
 
     return data
 
-#urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
-urllib.urlretrieve("http://marc-antoine-salsedo.fr/evenements.csv", "/home/nao/dialog/evenements.csv")
-
+urllib.urlretrieve("https://sharepoint.parisnanterre.fr/wp-content/uploads/2018/06/evenements.csv", "/home/nao/dialog/ParisNanterre.csv")
 mois = memory.getData("mois")
 annee= memory.getData("annee")
 
@@ -502,7 +499,7 @@ listeMois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "
 speech.say("OK, je cherche les projets pour le mois de "+ str(mois) + str(annee))
 strDate = '{:02d}'.format(listeMois.index(str(mois))+1)+"/"+str(annee)
 
-csvFile = '/home/nao/dialog/evenements.csv'
+csvFile = '/home/nao/dialog/ParisNanterre.csv'
 # lecture des données
 data = read_csv(csvFile)
 entete = data[0][0].split(';')
